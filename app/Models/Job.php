@@ -5,14 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property mixed|string status
+ * @property mixed|string error
+ */
 class Job extends Model
 {
+    use HasFactory;
+
     const STATUS_IN_PROGRESS = 'in-progress';
     const STATUS_NEW = 'new';
     const STATUS_FAILED = 'failed';
     const STATUS_SUCCESS = 'success';
 
-    use HasFactory;
+    protected $fillable = [
+        'filename',
+        'status',
+        'error'
+    ];
 
     /**
      * @param string $status
