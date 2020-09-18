@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property mixed|string status
  * @property mixed|string error
+ * @property mixed|string filename
  */
 class Job extends Model
 {
@@ -42,5 +43,13 @@ class Job extends Model
     {
         $this->error = $error;
         return $this;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    public function getFilename()
+    {
+        return $this->filename;
     }
 }
