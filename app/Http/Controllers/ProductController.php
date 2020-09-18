@@ -24,6 +24,11 @@ class ProductController extends Controller
 
         GenerateYmlJob::dispatch($job, collect($products));
 
-        return response()->json(['message' => __('product.yml_generation_started_successfully')]);
+        return response()->json(
+            [
+                'message' => __('product.yml_generation_started_successfully'),
+                'job' => $job->refresh()
+            ]
+        );
     }
 }
