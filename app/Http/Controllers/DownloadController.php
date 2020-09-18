@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateYmlJob;
 use App\Models\Job;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -21,7 +22,7 @@ class DownloadController extends Controller
         $status = $job->getStatus();
 
         if ($status === Job::STATUS_SUCCESS) {
-            $fileName = Storage::disk('public')->path('ymls/' . $job->getFilename());
+            $fileName = Storage::disk('public')->path(GenerateYmlJob::YML_FOLDER . '/' . $job->getFilename());
             return response()->download($fileName);
         }
 

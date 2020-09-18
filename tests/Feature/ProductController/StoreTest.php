@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
+use App\Jobs\GenerateYmlJob as YmlJob;
 
 class StoreTest extends TestCase
 {
@@ -72,6 +73,6 @@ class StoreTest extends TestCase
 
         $responseData = $response->getData();
         $fileName = $responseData->job->filename;
-        $this->filesToDelete[] = Storage::disk('public')->path('ymls/' . $fileName);
+        $this->filesToDelete[] = Storage::disk('public')->path(YmlJob::YML_FOLDER . '/' . $fileName);
     }
 }

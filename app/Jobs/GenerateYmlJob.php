@@ -22,6 +22,8 @@ class GenerateYmlJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    const YML_FOLDER = 'ymls';
+
     private Collection $products;
     private Job $passedJob;
 
@@ -45,9 +47,9 @@ class GenerateYmlJob implements ShouldQueue
     public function handle()
     {
         try {
-            Storage::disk('public')->makeDirectory('ymls');
+            Storage::disk('public')->makeDirectory(self::YML_FOLDER);
 
-            $file = Storage::disk('public')->path('ymls/' .  $this->passedJob->getFilename());
+            $file = Storage::disk('public')->path(self::YML_FOLDER . '/' .  $this->passedJob->getFilename());
 
             $settings = (new Settings())
                 ->setOutputFile($file)

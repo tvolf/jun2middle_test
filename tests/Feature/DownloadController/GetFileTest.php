@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Tests\TestCase;
+use App\Jobs\GenerateYmlJob as YmlJob;
 
 class GetFileTest extends TestCase
 {
@@ -70,7 +71,7 @@ class GetFileTest extends TestCase
         $job = Job::factory()->create(['status' => Job::STATUS_SUCCESS]);
 
         $fileName = $job->getFilename();
-        Storage::disk('public')->put('ymls/' . $fileName, $ymlContent);
+        Storage::disk('public')->put(YmlJob::YML_FOLDER .'/' . $fileName, $ymlContent);
 
         /** @var TestResponse|BinaryFileResponse $response */
         $response = $this->get($this->getRoute([$job->getFilename()]))
@@ -78,7 +79,9 @@ class GetFileTest extends TestCase
 
         $fileName = $response->getFile()->getFilename();
 
-        $content = Storage::disk('public')->get('ymls/' . $fileName);
+        $content = Storage::disk('public')->get(YmlJob::YML_FOLDER . '/' . $fileName);
         self::assertEquals($ymlContent, $content);
+
+        $this->filesToDelete[] = Storage::disk('public')->path(YmlJob::YML_FOLDER . '/' . $fileName);
     }
 }
