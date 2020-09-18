@@ -16,6 +16,7 @@ class GenerateYmlJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private Collection $products;
+    private Job $passedJob;
 
     /**
      * Create a new job instance.
@@ -25,8 +26,8 @@ class GenerateYmlJob implements ShouldQueue
      */
     public function __construct(Job $job, Collection $products)
     {
+        $this->passedJob = $job;
         $this->products = $products;
-        $this->job = $job;
     }
 
     /**
@@ -39,16 +40,16 @@ class GenerateYmlJob implements ShouldQueue
         try {
             $this->products->each(
                 function (array $item) {
-                    $this->job->setStatus(Job::STATUS_IN_PROGRESS)
+                    $this->passedJob->setStatus(Job::STATUS_IN_PROGRESS)
                         ->save();
 //                ...  here is processing of current record
                 }
             );
 
-            $this->job->setStatus(Job::STATUS_SUCCESS)
+            $this->passedJob->setStatus(Job::STATUS_SUCCESS)
                 ->save();
-        } catch (Exception $e) {
-            $this->job->setError($e->getMessage())
+        } catch (Exception $exception) {
+            $this->passedJob->setError($exception->getMessage())
                 ->setStatus(Job::STATUS_FAILED)
                 ->save();
         }
