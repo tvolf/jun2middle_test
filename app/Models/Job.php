@@ -48,8 +48,24 @@ class Job extends Model
     /**
      * @return mixed|string
      */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return mixed|string
+     */
     public function getFilename()
     {
         return $this->filename;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    public function getError()
+    {
+        return $this->error;
     }
 }
