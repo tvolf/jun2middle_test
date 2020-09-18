@@ -13,7 +13,7 @@ class ProductController extends Controller
     {
         $products = $request->input('items');
 
-        $fileName = Str::random(20) . '.yml';
+        $fileName = sha1(Str::random(20) . microtime(true)) . '.xml';
 
         $job = Job::query()->create(
             [
