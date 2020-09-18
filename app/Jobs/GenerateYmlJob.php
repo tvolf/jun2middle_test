@@ -43,6 +43,8 @@ class GenerateYmlJob implements ShouldQueue
     {
 
         try {
+            Storage::disk('public')->makeDirectory('ymls');
+
             $file = Storage::disk('public')->path('ymls/' .  $this->passedJob->getFilename());
 
             $settings = (new Settings())
