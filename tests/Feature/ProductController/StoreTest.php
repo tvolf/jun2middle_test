@@ -3,7 +3,10 @@
 namespace Tests\Feature\ProductController;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class StoreTest extends TestCase
@@ -60,9 +63,14 @@ class StoreTest extends TestCase
             ]
         ];
 
-        $this->postJson($this->route, ['items' => $items])
+        /** @var TestResponse|JsonResponse $response */
+        $response = $this->postJson($this->route, ['items' => $items])
             ->assertStatus(200)
             ->assertJsonStructure(['message', 'job'])
             ->assertJsonFragment(['message' => __('product.yml_generation_started_successfully')]);
+
+        $responseData = $response->getData();
+        $fileName = $responseData->job->filename;
+        $this->filesToDelete[] = Storage::disk('public')->path('ymls/' . $fileName);
     }
 }
