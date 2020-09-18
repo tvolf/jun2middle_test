@@ -56,9 +56,10 @@ class StoreTest extends TestCase
     {
         $items = [
             [
-                'name' => 'Product mame',
+                'name' => 'Product name',
                 'category' => 'Product category',
                 'price' => '1.22',
+                'url' => 'http://test.com/?product=123',
                 'image' => 'http://image.com/some_image.jpg'
             ]
         ];

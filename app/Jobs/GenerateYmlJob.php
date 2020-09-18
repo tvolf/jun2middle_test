@@ -4,6 +4,9 @@ namespace App\Jobs;
 
 use App\Models\Job;
 use Bukashk0zzz\YmlGenerator\Generator;
+use Bukashk0zzz\YmlGenerator\Model\Category;
+use Bukashk0zzz\YmlGenerator\Model\Currency;
+use Bukashk0zzz\YmlGenerator\Model\Offer\OfferSimple;
 use Bukashk0zzz\YmlGenerator\Model\ShopInfo;
 use Bukashk0zzz\YmlGenerator\Settings;
 use Exception;
@@ -41,7 +44,6 @@ class GenerateYmlJob implements ShouldQueue
      */
     public function handle()
     {
-
         try {
             Storage::disk('public')->makeDirectory('ymls');
 
@@ -52,37 +54,59 @@ class GenerateYmlJob implements ShouldQueue
                 ->setEncoding('UTF-8')
             ;
 
-// Creating ShopInfo object (https://yandex.ru/support/webmaster/goods-prices/technical-requirements.xml#shop)
             $shopInfo = (new ShopInfo())
                 ->setName('BestShop')
                 ->setCompany('Best online seller Inc.')
                 ->setUrl('http://www.best.seller.com/')
             ;
 
+            $categories = $this->products->pluck('category')->unique()->map(function ($category, $index) {
+                return [
+                    'name' => $category,
+                    'index' => $index + 1
+                ];
+            });
 
-            $currencies = [];
-            $categories = [];
-            $offers = [];
-            $deliveries = [];
+            $currencies = [(new Currency())->setId('USD')->setRate(1)];
 
-            $this->products->each(
-                function (array $item) {
-                    $this->passedJob->setStatus(Job::STATUS_IN_PROGRESS)
-                        ->save();
-//                ...  here is processing of current record
+            $offers = $this->products->map(function ($item, $index) use ($categories) {
+
+                $category = $categories->first(function ($categoryItem) use ($item) {
+                    return $categoryItem['name'] === $item['category'];
+                });
+
+                if (!$category) {
+                    throw new Exception('Cannot find category ' . $item['category']);
                 }
-            );
+
+                $categoryIndex = $category['index'];
+
+                return (new OfferSimple())
+                    ->setId($index + 1)
+                    ->setAvailable(true)
+                    ->setUrl($item['url'])
+                    ->setPrice($item['price'])
+                    ->setCurrencyId('USD')
+                    ->setCategoryId($categoryIndex)
+                    ->setDelivery(false)
+                    ->setName($item['name'])
+                ;
+            });
+
+            $categories = $categories->map(function ($item) {
+                return (new Category())->setId($item['index'])->setName($item['name']);
+            });
+            $deliveries = [];
 
             (new Generator($settings))->generate(
                 $shopInfo,
                 $currencies,
-                $categories,
-                $offers,
+                $categories->toArray(),
+                $offers->toArray(),
                 $deliveries
             );
 
-            $this->passedJob->setStatus(Job::STATUS_SUCCESS)
-                ->save();
+            $this->passedJob->setStatus(Job::STATUS_SUCCESS)->save();
         } catch (Exception $exception) {
             $this->passedJob->setError($exception->getMessage())
                 ->setStatus(Job::STATUS_FAILED)

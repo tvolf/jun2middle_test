@@ -28,6 +28,7 @@ class UploadProductsRequest extends FormRequest
             'items.*.name' => 'required|string|max:255',
             'items.*.price' => 'required|numeric',
             'items.*.image' => 'required|url',
+            'items.*.url' => 'required|url',
             'items.*.category' => 'required|string|max:255'
         ];
     }
