@@ -57,12 +57,19 @@ class StoreTest extends TestCase
     {
         $items = [
             [
-                'name' => 'Product name',
+                'name' => 'Product name 1',
                 'category' => 'Product category',
                 'price' => '1.22',
                 'url' => 'http://test.com/?product=123',
-                'image' => 'http://image.com/some_image.jpg'
-            ]
+                'image' => 'http://image.com/image1.jpg'
+            ],
+            [
+                'name' => 'Product name 2',
+                'category' => 'Product category',
+                'price' => '3',
+                'url' => 'http://test.com/?product=567',
+                'image' => 'http://image.com/image2.jpg'
+            ],
         ];
 
         /** @var TestResponse|JsonResponse $response */
